@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    <h1>Register</h1>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-sm-12">
+                {{ form_start(registrationForm) }}
+                {{ form_widget(registrationForm) }}
+                <div class="form-group row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-10">
+                        <button type="submit" id="sign_up" name="sign_up" class="btn btn-success btn">
+                            <i class="fa fa-lock"></i> Register
+                        </button>
+                    </div>
+                </div>
+                {{ form_end(registrationForm) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

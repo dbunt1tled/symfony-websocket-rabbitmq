@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="stylesheet" href="{{ asset('build/css/app.css') }}" >
+    <link rel="stylesheet" href="{{ asset('build/css/global.css') }}" >
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+{% block body %}{% endblock %}
+
+{% block javascripts %}{% endblock %}
+<script src="{{ asset('build/runtime.js')}}"></script>
+<script src="{{ asset('build/js/app.js') }}"></script>
+{% if is_granted('ROLE_USER') %}
+    <script src="js/autobahn.js"></script>
+    <script>
+        var conn1 = new WebSocket('ws://{{ getEnv('APP_HTTP_HOST') }}:8082');
+        conn1.onopen = function (e) {
+            console.log("Connection established!");
+        };
+
+        conn1.onmessage = function (e) {
+            console.log(e.data);
+        };
+    </script>
+    <script>
+        var appSession = null;
+        var conn = new ab.Session('ws://{{ getEnv('APP_HTTP_HOST') }}:8081',
+            function (session) {
+                appSession = session;
+                console.log(appSession);
+                conn.subscribe('eventMonitoring', function (topic, data) {
+                    // This is where you would add the new article to the DOM (beyond the scope of this tutorial)
+                    console.log('New article published to category "' + topic + '" : ');
+                    console.log(data);
+
+                });
+                conn.subscribe('eventMessage', function (topic, data) {
+                    // This is where you would add the new article to the DOM (beyond the scope of this tutorial)
+                    // alert('New Message "' + topic + '" : ' );
+                    console.log(data);
+                });
+            },
+            function (code, reason, detail) {
+                console.warn('WebSocket connection closed', code, reason, detail);
+            },
+            {
+                skipSubprotocolCheck: true
+            }
+        );
+        conn.onopen = function (e) {
+            console.log("Connection yo-yo-yo!");
+        };
+        conn.onmessage = function (e) {
+            console.warn(e);
+        };
+/**/
+        function getCookie(name) {
+            var matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        }/**/
+        // использование Math.round() даст неравномерное распределение!
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+    </script>
+{% endif %}
+</body>
+</html>
